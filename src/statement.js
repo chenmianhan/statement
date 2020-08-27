@@ -45,12 +45,9 @@ function calculateTotalVolumeCredits(invoice, plays) {
     return volumeCredits;
 }
 
-function generateAmountAndSeatData(invoice, plays, result, format) {
-    for (let perf of invoice.performances) {
-        const play = plays[perf.playID];
-        let thisAmount = 0;
-        thisAmount = calculateThisAmountPerPerformance(play, thisAmount, perf);
-        result += ` ${play.name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
+function generateAmountAndSeatData(statementData, result, format) {
+    for (let performanceAmountData of statementData.performanceAmountDataArray) {
+        result += ` ${performanceAmountData.playName}: ${format(performanceAmountData.thisAmount / 100)} (${performanceAmountData.audience} seats)\n`;
     }
     return result;
 }
@@ -67,8 +64,8 @@ function calculateTotalAmount(invoice, plays) {
     return totalAmount;
 }
 
-function generateFirstLineOfStatement(invoice) {
-    return `Statement for ${invoice.customer}\n`;
+function generateFirstLineOfStatement(customer) {
+    return `Statement for ${customer}\n`;
 }
 
 function generateTotalAmountLine(result, format, totalAmount) {
@@ -80,20 +77,42 @@ function generateVolumeCredits(volumeCredits) {
     return `You earned ${volumeCredits} credits \n`;
 }
 
-function generatePlainText(invoice, plays) {
-    let totalAmount = calculateTotalAmount(invoice, plays);
-    let volumeCredits = calculateTotalVolumeCredits(invoice, plays);
-    let result = generateFirstLineOfStatement(invoice);
-    const format = generateFormat();
-
-    result = generateAmountAndSeatData(invoice, plays, result, format);
-    result = generateTotalAmountLine(result, format, totalAmount);
-    result += generateVolumeCredits(volumeCredits);
+function generatePlainText(statementData) {
+    let result = generateFirstLineOfStatement(statementData.customer);
+    result = generateAmountAndSeatData(statementData, result, generateFormat());
+    result = generateTotalAmountLine(result, generateFormat(), statementData.totalAmount);
+    result += generateVolumeCredits(statementData.volumeCredits);
     return result;
 }
 
+function createStatementData(invoice, plays) {
+    let statementData = {}
+    let totalAmount = calculateTotalAmount(invoice, plays);
+    let volumeCredits = calculateTotalVolumeCredits(invoice, plays);
+    statementData.totalAmount = totalAmount;
+    statementData.volumeCredits = volumeCredits;
+    statementData.performanceAmountDataArray = createPerformanceAmountDataArray(invoice, plays);
+    statementData.customer = invoice.customer;
+    return statementData;
+}
+
+function createPerformanceAmountDataArray(invoice, plays) {
+    let performanceAmountDataArray = [];
+    for (let perf of invoice.performances) {
+        const play = plays[perf.playID];
+        let thisAmount = 0;
+        thisAmount = calculateThisAmountPerPerformance(play, thisAmount, perf);
+        let performanceAmountData = {}
+        performanceAmountData.playName = play.name;
+        performanceAmountData.thisAmount = thisAmount;
+        performanceAmountData.audience = perf.audience;
+        performanceAmountDataArray.push(performanceAmountData);
+    }
+    return performanceAmountDataArray;
+}
+
 function statement(invoice, plays) {
-    return generatePlainText(invoice, plays);
+    return generatePlainText(createStatementData(invoice, plays));
 }
 
 module.exports = {
