@@ -35,6 +35,15 @@ function generateFormat() {
     }).format;
 }
 
+function calculateTotalVolumeCredits(invoice, plays, volumeCredits) {
+    for (let perf of invoice.performances) {
+        const play = plays[perf.playID];
+        volumeCredits += calculateVolumeCredits(perf);
+        if ('comedy' === play.type) volumeCredits += calculateExtraCreditForEveryTenComedyAttendees(perf);
+    }
+    return volumeCredits;
+}
+
 function statement(invoice, plays) {
     let totalAmount = 0;
     let volumeCredits = 0;
@@ -50,12 +59,7 @@ function statement(invoice, plays) {
         result += ` ${play.name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
         totalAmount += thisAmount;
     }
-
-    for (let perf of invoice.performances) {
-        const play = plays[perf.playID];
-        volumeCredits += calculateVolumeCredits(perf);
-        if ('comedy' === play.type) volumeCredits += calculateExtraCreditForEveryTenComedyAttendees(perf);
-    }
+    volumeCredits = calculateTotalVolumeCredits(invoice, plays, volumeCredits);
     result += `Amount owed is ${format(totalAmount / 100)}\n`;
     result += `You earned ${volumeCredits} credits \n`;
     return result;
