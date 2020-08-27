@@ -68,6 +68,15 @@ function generateFirstLineOfStatement(invoice) {
     return `Statement for ${invoice.customer}\n`;
 }
 
+function generateTotalAmountLine(result, format, totalAmount) {
+    result += `Amount owed is ${format(totalAmount / 100)}\n`;
+    return result;
+}
+
+function generateVolumeCredits(volumeCredits) {
+    return `You earned ${volumeCredits} credits \n`;
+}
+
 function statement(invoice, plays) {
     let totalAmount = 0;
     let volumeCredits = 0;
@@ -75,10 +84,10 @@ function statement(invoice, plays) {
     const format = generateFormat();
 
     totalAmount = calculateTotalAmount(invoice, plays, totalAmount);
-    result = generateAmountAndSeatData(invoice, plays, result, format);
     volumeCredits = calculateTotalVolumeCredits(invoice, plays, volumeCredits);
-    result += `Amount owed is ${format(totalAmount / 100)}\n`;
-    result += `You earned ${volumeCredits} credits \n`;
+    result = generateAmountAndSeatData(invoice, plays, result, format);
+    result = generateTotalAmountLine(result, format, totalAmount);
+    result += generateVolumeCredits(volumeCredits);
     return result;
 }
 
