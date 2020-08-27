@@ -84,6 +84,19 @@ function generatePlainText(statementData) {
     return result;
 }
 
+function generateHtml(statementData) {
+    let result = `<h1>Statement for ${statementData.customer}</h1>\n`;
+    result += '<table>\n';
+    result += '<tr><th>play</th><th>seats</th><th>cost</th></tr>\n';
+    for (let performanceAmountData of statementData.performanceAmountDataArray) {
+        result += ` <tr><td>${performanceAmountData.playName}</td><td>${performanceAmountData.audience}</td><td>${generateFormat()(performanceAmountData.thisAmount / 100)}</td></tr>\n`;
+    }
+    result += '</table>\n';
+    result += `<p>Amount owed is <em>${generateFormat()(statementData.totalAmount / 100)}</em></p>\n`;
+    result += `<p>You earned <em>${statementData.volumeCredits}</em> credits</p>\n`;
+    return result;
+}
+
 function createStatementData(invoice, plays) {
     let statementData = {}
     let totalAmount = calculateTotalAmount(invoice, plays);
@@ -114,6 +127,9 @@ function statement(invoice, plays) {
     return generatePlainText(createStatementData(invoice, plays));
 }
 
+function statementHtml(invoice, plays) {
+    return generateHtml(createStatementData(invoice, plays))
+}
 module.exports = {
-    statement,
+    statement, statementHtml
 };
