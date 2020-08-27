@@ -55,6 +55,7 @@ function generateAmountAndSeatData(invoice, plays, result, format) {
     return result;
 }
 
+
 function calculateTotalAmount(invoice, plays) {
     let totalAmount = 0;
     for (let perf of invoice.performances) {
@@ -79,7 +80,7 @@ function generateVolumeCredits(volumeCredits) {
     return `You earned ${volumeCredits} credits \n`;
 }
 
-function statement(invoice, plays) {
+function generatePlainText(invoice, plays) {
     let totalAmount = calculateTotalAmount(invoice, plays);
     let volumeCredits = calculateTotalVolumeCredits(invoice, plays);
     let result = generateFirstLineOfStatement(invoice);
@@ -89,6 +90,10 @@ function statement(invoice, plays) {
     result = generateTotalAmountLine(result, format, totalAmount);
     result += generateVolumeCredits(volumeCredits);
     return result;
+}
+
+function statement(invoice, plays) {
+    return generatePlainText(invoice, plays);
 }
 
 module.exports = {
