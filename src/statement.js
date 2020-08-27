@@ -27,17 +27,19 @@ function calculateExtraCreditForEveryTenComedyAttendees(perf) {
     return Math.floor(perf.audience / 5);
 }
 
-function statement(invoice, plays) {
-    let totalAmount = 0;
-    let volumeCredits = 0;
-    let result = `Statement for ${invoice.customer}\n`;
-
-    const format = new Intl.NumberFormat('en-US', {
+function generateFormat() {
+    return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
         minimumFractionDigits: 2,
     }).format;
+}
 
+function statement(invoice, plays) {
+    let totalAmount = 0;
+    let volumeCredits = 0;
+    let result = `Statement for ${invoice.customer}\n`;
+    const format = generateFormat();
 
     for (let perf of invoice.performances) {
         const play = plays[perf.playID];
