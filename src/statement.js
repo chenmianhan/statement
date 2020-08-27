@@ -64,10 +64,14 @@ function calculateTotalAmount(invoice, plays, totalAmount) {
     return totalAmount;
 }
 
+function generateFirstLineOfStatement(invoice) {
+    return `Statement for ${invoice.customer}\n`;
+}
+
 function statement(invoice, plays) {
     let totalAmount = 0;
     let volumeCredits = 0;
-    let result = `Statement for ${invoice.customer}\n`;
+    let result = generateFirstLineOfStatement(invoice);
     const format = generateFormat();
 
     totalAmount = calculateTotalAmount(invoice, plays, totalAmount);
