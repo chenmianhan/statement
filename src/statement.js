@@ -54,10 +54,13 @@ function statement(invoice, plays) {
         const play = plays[perf.playID];
         let thisAmount = 0;
         thisAmount = calculateThisAmountPerPerformance(play, thisAmount, perf);
-
-        //print line for this order
-        result += ` ${play.name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
         totalAmount += thisAmount;
+    }
+    for (let perf of invoice.performances) {
+        const play = plays[perf.playID];
+        let thisAmount = 0;
+        thisAmount = calculateThisAmountPerPerformance(play, thisAmount, perf);
+        result += ` ${play.name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
     }
     volumeCredits = calculateTotalVolumeCredits(invoice, plays, volumeCredits);
     result += `Amount owed is ${format(totalAmount / 100)}\n`;
