@@ -52,7 +52,6 @@ function generateAmountAndSeatData(statementData, result, format) {
     return result;
 }
 
-
 function calculateTotalAmount(invoice, plays) {
     let totalAmount = 0;
     for (let perf of invoice.performances) {
