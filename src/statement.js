@@ -54,18 +54,23 @@ function generateAmountAndSeatData(invoice, plays, result, format) {
     return result;
 }
 
-function statement(invoice, plays) {
-    let totalAmount = 0;
-    let volumeCredits = 0;
-    let result = `Statement for ${invoice.customer}\n`;
-    const format = generateFormat();
-
+function calculateTotalAmount(invoice, plays, totalAmount) {
     for (let perf of invoice.performances) {
         const play = plays[perf.playID];
         let thisAmount = 0;
         thisAmount = calculateThisAmountPerPerformance(play, thisAmount, perf);
         totalAmount += thisAmount;
     }
+    return totalAmount;
+}
+
+function statement(invoice, plays) {
+    let totalAmount = 0;
+    let volumeCredits = 0;
+    let result = `Statement for ${invoice.customer}\n`;
+    const format = generateFormat();
+
+    totalAmount = calculateTotalAmount(invoice, plays, totalAmount);
     result = generateAmountAndSeatData(invoice, plays, result, format);
     volumeCredits = calculateTotalVolumeCredits(invoice, plays, volumeCredits);
     result += `Amount owed is ${format(totalAmount / 100)}\n`;
